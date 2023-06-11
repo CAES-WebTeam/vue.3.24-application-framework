@@ -1,0 +1,33 @@
+const gc3AssociationReportTypeFieldCriteriaStructure = {
+	submitSearch: true,
+	displayMode: 'NORMAL',
+	queryMode: 'NORMAL',
+	SortKey: null,
+	criteria_TYPE_ID_eq: [],
+	criteria_TYPE_ID_neq: [],
+	criteria_TYPE_ID_gt: null,
+	criteria_TYPE_ID_lt: null,
+	criteria_AREA_ID_eq: [],
+	criteria_AREA_ID_neq: [],
+	criteria_AREA_ID_gt: null,
+	criteria_AREA_ID_lt: null,
+	criteria_TOPIC_ID_eq: [],
+	criteria_TOPIC_ID_neq: [],
+	criteria_TOPIC_ID_gt: null,
+	criteria_TOPIC_ID_lt: null,
+	criteria_FIELD_ID_eq: [],
+	criteria_FIELD_ID_neq: [],
+	criteria_FIELD_ID_gt: null,
+	criteria_FIELD_ID_lt: null,
+	criteria_FOR_REPORT_eq: [],
+	criteria_FOR_SUB_REPORT_eq: [],
+	criteria_IS_REQUIRED_eq: [],
+	criteria_LoadChunk_TYPE_ID: null,
+	criteria_LoadChunk_AREA_ID: null,
+	criteria_LoadChunk_TOPIC_ID: null,
+	criteria_LoadChunk_FIELD_ID: null,
+	criteria_IsForReportOrForSubReport: null,
+	criteria_IsForReportOrForSubReportOrRequired: null
+};
+
+export default gc3AssociationReportTypeFieldCriteriaStructure;
