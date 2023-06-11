@@ -823,17 +823,7 @@ export default {
 				});
 		}
 	},
-	/* methods: {
-			addCollaborator () {
-				if (this.newCollaborator.PERSONNEL_ID) {
-					this.collaborators.push({ ...this.newCollaborator });
-					this.newCollaborator = {
-						REPORT_ID: this.reportID || null,
-						PERSONNEL_ID: null,
-						IS_REJECTED: false
-					};
-				}
-			}, */
+	
 	methods: {
 		// Modified by SA on 04/24/23 Added check to prevent adding the same collaborator multiple times
 		addCollaborator() {
