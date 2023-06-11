@@ -1,0 +1,3 @@
+[submodule "server/public/global/resources"]
+	path = server/public/global/resources
+	url = git@gitlab.com:caesoit/intranet/resources.git
