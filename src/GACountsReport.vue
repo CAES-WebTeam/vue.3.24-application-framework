@@ -1,5 +1,3 @@
-<!-- Converted -->
-
 <template lang="html">
 	<div id="main">
 		<div class="heading-container">
@@ -28,12 +26,20 @@
 				title="Making a report a favorite will pin it to your GACounts homepage, allowing for easier duplication."
 				@click="updateReportTemplateStatus">
 				<div v-if="duplicateRecord.IS_TEMPLATE">
-					<span class="icon-wrapper">★</span>
-					<span>Favorite</span>
+					<span class="icon-wrapper">
+						★
+					</span>
+					<span>
+						Favorite
+					</span>
 				</div>
 				<div v-else>
-					<span class="icon-wrapper">☆</span>
-					<span>Make a Favorite</span>
+					<span class="icon-wrapper">
+						☆
+					</span>
+					<span>
+						Make a Favorite
+					</span>
 				</div>
 			</button>
 		</div>
@@ -46,26 +52,40 @@
 		<DetailMain v-if="isNew || identifier !== null" :schema="schema" :identifier="identifier || false" :mode="mode"
 			:user-is-owner="userIsOwner" />
 		<div v-else>
-			<h2>Welcome to the GACounts Single-Page Report Entry</h2>
-			<p>What would you like to do?</p>
+			<h2>
+				Welcome to the GACounts Single-Page Report Entry
+			</h2>
+			<p>
+				What would you like to do?
+			</p>
 			<form>
 				<label>
-					<button type="button" @click="reloadPage">Enter a new report</button>
+					<button type="button" @click="reloadPage">
+						Enter a new report
+					</button>
 				</label>
-				<p>-- or --</p>
+				<p>
+					-- or --
+				</p>
 				<fieldset>
 					<label>
-						<span>Enter a report ID to lookup an existing report</span>
+						<span>
+							Enter a report ID to lookup an existing report
+						</span>
 						<input v-model="inputID" type="number" min="0" />
 					</label>
 					<label>
-						<button type="button" @click="reloadPage">Go</button>
+						<button type="button" @click="reloadPage">
+							Go
+						</button>
 					</label>
 				</fieldset>
 			</form>
 		</div>
+		<!-- <pre>{{ schemaLessStore }}</pre> -->
 	</div>
 </template>
+
 <script>
 /* global activeUser */
 /* global activeUserID */
@@ -73,13 +93,10 @@
 /* global swal */
 
 // Import required modules
-import { ref } from 'vue';
 import DetailMain from '~/views/DetailMain';
 import DuplicationModal from '~/views/DuplicationModal';
 import DuplicationPane4HEnrollment from '~/views/custom/gacounts3/DuplicationPane4HEnrollment';
 import duplicationSchema from '~/schemas/gacounts3/duplication/report';
-import { watch, onMounted } from 'vue';
-import { computed } from 'vue';
 import { getSortedSchema } from '~/modules/schemaTools';
 import schema from '~/schemas/gacounts3/report';
 import {
@@ -121,6 +138,7 @@ if (!schema.title) schema.title = stringFormats.tableToTitle(schema.table);
 // Sort the schema
 const sortedSchema = getSortedSchema(schema);
 
+// Export the actual component
 export default {
 	name: 'GACountsReport',
 	components: {
@@ -128,10 +146,10 @@ export default {
 		DuplicationModal,
 		DuplicationPane4HEnrollment
 	},
-	setup() {
+	data() {
 		// Determine if entering new record
-		const isNew = ref(url.getParam('new') !== null);
-		const duplicateId = ref(url.getParam('duplicateID') || false);
+		const isNew = url.getParam('new') !== null;
+		const duplicateId = url.getParam('duplicateID') || false;
 
 		// Create our data object to return
 		const data = {
@@ -145,116 +163,98 @@ export default {
 			duplicationSchema,
 			identifier: null,
 			inputID: null,
-			isDuplicate: ref(duplicateId.value !== false),
+			isDuplicate: duplicateId !== false,
 			isNew,
-			mode: ref('view'),
+			mode: 'view',
 			schema: sortedSchema,
 			watchedFieldsChangeCount: 0,
 			watchedFieldsNotified: []
 		};
 
 		// If not entering a new record, we need to get the Report ID
-		if (!isNew.value) {
+		if (!isNew) {
 			const id = url.getParam('PK_ID') || url.getParam('pk_id');
-			if (id) {
-				data.identifier = {
-					key: 'ID',
-					value: id,
-					duplicate: false
-				};
-			} else {
-				logError(new Error('Neither the "new" parameter or a pkid were found when attempting to view an existing report. This state should not be possible, so it must mean something has really gone wrong.'));
-			}
-		} else if (duplicateId.value) {
+			if (id) data.identifier = {
+				key: 'ID',
+				value: id,
+				duplicate: false
+			};
+			else logError(new Error('Neither the "new" parameter or a pkid were found when attempting to view an existing report.  This state should not be possible, so it must mean something has really gone wrong.'));
+		} else if (duplicateId) {
 			data.identifier = {
 				key: 'ID',
-				value: duplicateId.value,
+				value: duplicateId,
 				duplicate: true
 			};
 		}
 
 		// Set the mode to edit if applicable
-		if (isNew.value) {
-			data.mode = 'edit';
-		}
+		if (isNew) data.mode = 'edit';
+
 
 		return data;
 	},
-
-
 	computed: {
 		...getComputed(schema),
-		demographicsSelectedForImport: computed(function () {
+
+		demographicsSelectedForImport() {
 			return this.duplicationSchema.sections['Demographic Information'].duplicate;
-		}),
-		duplication: computed(function () {
+		},
+		duplication() {
 			return this.$store.state.duplication;
-		}),
-		schemaLessStore: computed(function () {
-			const schemaLessStore = { ...this.$store.state };
-			delete schemaLessStore.schema;
-			if (schemaLessStore.subschemas) {
-				for (const key in schemaLessStore.subschemas) {
-					delete schemaLessStore.subschemas[key].schema;
-				}
+		},
+		schemaLessStore: {
+			get() {
+				const schemaLessStore = { ...this.$store.state };
+				delete schemaLessStore.schema;
+				if (schemaLessStore.subschemas) for (const key in schemaLessStore.subschemas) delete schemaLessStore.subschemas[key].schema;
+
+				return schemaLessStore;
 			}
-			return schemaLessStore;
-		}),
-		userCanFileSubReport: computed(function () {
-			return (
-				this.$store.state.collaborators.records
-					.map(r => r.PERSONNEL_ID)
-					.indexOf(activeUserID) !== -1 &&
-				!this.userCollaboratorRecord.IS_REJECTED
-			);
-		}),
-		userCollaboratorRecord: computed(function () {
-			const userCollaboratorRecordIndex = this.$store.state.collaborators.records
-				.map(r => r.PERSONNEL_ID)
-				.indexOf(activeUserID);
-			if (userCollaboratorRecordIndex === -1) {
-				return {};
-			}
+		},
+		userCanFileSubReport() {
+			return this.$store.state.collaborators.records.map(r => r.PERSONNEL_ID).indexOf(activeUserID) !== -1 && !this.userCollaboratorRecord.IS_REJECTED;
+		},
+		userCollaboratorRecord() {
+			const userCollaboratorRecordIndex = this.$store.state.collaborators.records.map(r => r.PERSONNEL_ID).indexOf(activeUserID);
+			if (userCollaboratorRecordIndex === -1) return {};
 			const userCollaboratorRecord = this.$store.state.collaborators.records[userCollaboratorRecordIndex];
+
 			return userCollaboratorRecord;
-		}),
-		userIsAdmin: computed(function () {
+		},
+		userIsAdmin() {
 			return Boolean(activeUser.IS_ADMINISTRATOR);
-		}),
-		userIsOwner: computed(function () {
+		},
+		userIsOwner() {
 			return this.OWNER_ID === activeUserID;
-		}),
+		}
 	},
 
 	watch: {
-		ID: {
-			immediate: true,
-			handler() {
-				// Once we have a report ID, we need to check if the user has a duplicated report record for this report
-				if (!isNaN(this.ID)) {
-					getCriteriaStructure('GACOUNTS3', 'GC3_DUPLICATED_REPORT', (err, data) => {
+		ID() {
+			// Once we have a report ID, we need to check if the user has a
+			// duplicated report record for this report
+			if (!isNaN(this.ID)) getCriteriaStructure('GACOUNTS3', 'GC3_DUPLICATED_REPORT', (err, data) => {
+				if (err) logError(err);
+				if (data) {
+					const critStruct = data;
+					critStruct.criteria_PERSONNEL_ID_eq.push(activeUserID);
+					critStruct.criteria_REPORT_ID_eq.push(this.ID);
+					getDuplicatedReport(critStruct, (err, data) => {
 						if (err) logError(err);
-						if (data) {
-							const critStruct = data;
-							critStruct.criteria_PERSONNEL_ID_eq.push(activeUserID);
-							critStruct.criteria_REPORT_ID_eq.push(this.ID);
-							getDuplicatedReport(critStruct, (err, data) => {
-								if (err) logError(err);
-								this.duplicateRecord.REPORT_ID = this.ID;
-								if (data.length > 0) this.duplicateRecord.IS_TEMPLATE = data[0].IS_TEMPLATE;
-								this.duplicateRecord.hasBeenFetched = true;
-							});
-						}
+						this.duplicateRecord.REPORT_ID = this.ID;
+						if (data.length > 0) this.duplicateRecord.IS_TEMPLATE = data[0].IS_TEMPLATE;
+						this.duplicateRecord.hasBeenFetched = true;
 					});
 				}
-			},
+			});
 		},
 		TITLE() {
 			if (!this.isNew && this.breadCrumbsHaveNotBeenSet && this.TITLE !== null && this.TITLE !== '') {
 				this.setBreadCrumbs();
 				this.breadCrumbsHaveNotBeenSet = false;
 			}
-		},
+		}
 	},
 	mounted() {
 		this.watchFields = true;
@@ -270,23 +270,26 @@ export default {
 		deleteReport() {
 			swal({
 				title: 'Are you sure?',
-				text: "You won't be able to undo this!",
+				text: 'You won\'t be able to undo this!',
 				type: 'warning',
 				showCancelButton: true,
 				confirmButtonText: 'Yes, delete it!'
-			}).then((result) => {
-				if (result.value) {
-					this.schema.deleteExisting(this.identifier.value, (err, data) => {
-						if (err) logError(err);
-						if (data.SUCCESS) {
-							swal('Deleted!', `Your ${this.schema.title} has been deleted.`, 'success').then(() => {
-								window.location.assign(`https://${window.location.hostname}/gacounts3`);
-							});
-						} else {
-							swal('Oops!', `Something went wrong on our end and your ${this.schema.title} could not be deleted.`, 'error');
-						}
+			}).then(result => {
+				if (result.value) this.schema.deleteExisting(this.identifier.value, (err, data) => {
+					if (err) logError(err);
+					if (data.SUCCESS) swal(
+						'Deleted!',
+						`Your ${this.schema.title} has been deleted.`,
+						'success'
+					).then(() => {
+						window.location.assign(`https://${window.location.hostname}/gacounts3`);
 					});
-				}
+					else swal(
+						'Oops!',
+						`Something went wrong on our end and your ${this.schema.title} could not be deleted.`,
+						'error'
+					);
+				});
 			});
 		},
 		redirectToDuplication() {
@@ -299,11 +302,8 @@ export default {
 			window.location = `https://${window.location.hostname}/gacounts3?function=RefuseSubReportInvitation&REPORT_ID=${this.ID}`;
 		},
 		reloadPage() {
-			if (this.inputID === null) {
-				window.location.href = `${window.location.href}&new`;
-			} else {
-				window.location.href = `${window.location.href}&pkid=${this.inputID}`;
-			}
+			if (this.inputID === null) window.location.href = `${window.location.href}&new`;
+			else window.location.href = `${window.location.href}&pkid=${this.inputID}`;
 		},
 		setBreadCrumbs() {
 			const breadCrumbList = document.querySelector('ul.breadcrumbs');
@@ -319,69 +319,20 @@ export default {
 			addListItem(window.location, this.TITLE);
 		},
 		toggleMode() {
-			if (this.mode === 'edit') {
-				this.mode = 'view';
-			} else if (this.mode === 'view') {
-				this.mode = 'edit';
-			}
+			if (this.mode === 'edit') this.mode = 'view';
+			else if (this.mode === 'view') this.mode = 'edit';
 		},
 		updateReportTemplateStatus() {
 			const duplicateRecord = { ...this.duplicateRecord };
 			duplicateRecord.IS_TEMPLATE = !this.duplicateRecord.IS_TEMPLATE;
 			postReportTemplateStatus(duplicateRecord, (err, data) => {
 				if (err) logError(err);
-				if (data.SUCCESS) {
-					this.duplicateRecord.IS_TEMPLATE = duplicateRecord.IS_TEMPLATE;
-				} else {
-					notify.error(data.messages);
-				}
+				if (data.SUCCESS) this.duplicateRecord.IS_TEMPLATE = duplicateRecord.IS_TEMPLATE;
+				else notify.error(data.messages);
 			});
 		}
 	},
-	setup() {
-		const store = getStore(schema, !url.getParam('key') || (url.getParam('key') && !url.getParam('value')));
-		const watchFields = ref(true);
-		const mode = ref('view');
-		const OWNER_ID = ref('');
-
-		// Set the page title
-		const setPageTitle = () => {
-			if (this.isNew && this.isDuplicate) {
-				document.title = `Duplicate Activity Report | ${document.title}`;
-			} else if (this.isNew) {
-				document.title = `New Activity Report | ${document.title}`;
-			} else {
-				document.title = `View Activity Report | ${document.title}`;
-			}
-		};
-
-		onMounted(() => {
-			watchFields.value = true;
-			if (this.userIsOwner) {
-				mode.value = 'edit';
-			}
-			if (url.getParam('new') !== null) {
-				OWNER_ID.value = activeUserID;
-			}
-
-			setPageTitle();
-		});
-
-		return {
-			store,
-			watchFields,
-			mode,
-			OWNER_ID,
-			deleteReport,
-			redirectToDuplication,
-			redirectToSubReportEntry,
-			redirectToSubReportRejection,
-			reloadPage,
-			setBreadCrumbs,
-			toggleMode,
-			updateReportTemplateStatus
-		};
-	}
+	store: getStore(schema, !url.getParam('key') || url.getParam('key') && !url.getParam('value'))
 };
 </script>
 
